@@ -45,7 +45,8 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     template = 'posts/post_detail.html'
-    post = get_object_or_404(Post.objects.select_related('author', 'group'), pk=post_id)
+    post = get_object_or_404(Post.objects.select_related('author', 'group'),
+                             pk=post_id)
     author = post.author.get_full_name
     count = post.author.posts.count()
     form = CommentForm()
