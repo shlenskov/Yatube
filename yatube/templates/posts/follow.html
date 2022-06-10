@@ -4,7 +4,7 @@
 {% block title %}Ваши подписки{% endblock %}
 {% block content %}
   {% cache 20 index_page page_obj %}
-  {% include 'posts/includes/switcher.html' %}
+  {% include 'posts/includes/switcher.html' with show_follow_link=True %}
   {% for post in page_obj %}
     {% thumbnail post.image "500x339" crop="center" upscale=True as im %}
         <img class="card-img my-2" src="{{ im.url }}">

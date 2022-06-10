@@ -45,10 +45,10 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     template = 'posts/post_detail.html'
-    post = get_object_or_404(Post, pk=post_id)
+    post = get_object_or_404(Post.objects.select_related('author', 'group'), pk=post_id)
     author = post.author.get_full_name
     count = post.author.posts.count()
-    form = CommentForm(request.POST or None)
+    form = CommentForm()
     comments = post.comment.select_related('author').all()
     context = {
         'post': post,
@@ -127,5 +127,6 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     follower = Follow.objects.filter(user=request.user, author=author)
-    follower.delete()
+    if follower.exists():
+        follower.delete()
     return redirect('posts:profile', username)

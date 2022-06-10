@@ -42,8 +42,6 @@ class Post(models.Model):
         upload_to='posts/',
         blank=True
     )
-    # Аргумент upload_to указывает директорию,
-    # в которую будут загружаться пользовательские файлы.
 
     class Meta:
         ordering = ('-pub_date',)
@@ -91,6 +89,3 @@ class Follow(models.Model):
         verbose_name='Дата комментария',
         on_delete=models.CASCADE,
     )
-
-    def __str__(self):
-        return self.user.name

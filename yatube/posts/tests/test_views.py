@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from django import forms
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -248,9 +249,12 @@ class PostCacheTest(TestCase):
         )
         response = self.guest_client.get(reverse('posts:index'))
         self.assertEqual(len(response.context['page_obj']), 1)
-        Post.objects.filter(pk=post.pk).delete()
+        post.delete()
         response2 = self.guest_client.get(reverse('posts:index'))
         self.assertEqual(response.content, response2.content)
+        cache.clear()
+        response3 = self.guest_client.get(reverse('posts:index'))
+        self.assertNotEqual(response.content, response3.content)
 
 
 class FollowTest(TestCase):
@@ -259,57 +263,61 @@ class FollowTest(TestCase):
         super().setUpClass()
         cls.user = User.objects.create_user(username='Forest')
         cls.author = User.objects.create_user(username='author')
+        cls.nofollow = User.objects.create_user(username='follower')
         cls.post = Post.objects.create(
-            author=cls.user,
+            author=cls.author,
             text='Тестовый текст'
         )
         cls.follower = Follow.objects.create(
-            author=cls.user,
-            user=cls.author
+            author=cls.author,
+            user=cls.user
         )
 
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
+        self.user_client = Client()
+        self.user_client.force_login(self.author)
+        self.nofollow_client = Client()
+        self.nofollow_client.force_login(self.nofollow)
 
     def test_authorized_client_following(self):
-        user2 = User.objects.create_user(username='follower')
-        # user3 = User.objects.create_user(username='no_follower')
-        user2_client = Client()
-        user2_client.force_login(user2)
-        response = user2_client.get(reverse('posts:follow_index'))
+        """Авторизованный пользователь может подписываться на других
+        пользователей"""
+        response = self.nofollow_client.get(reverse('posts:follow_index'))
         count = len(response.context['page_obj'])
-        Follow.objects.create(
-            author=self.user,
-            user=user2
-        )
-        response = user2_client.get(reverse('posts:follow_index'))
-        self.assertTrue(len(response.context['page_obj']))
         self.assertFalse(count)
+        self.nofollow_client.get(
+            reverse('posts:profile_follow', args=(self.author,)))
+        self.assertTrue(Post.objects.filter(author__following__user=self.user))
 
     def test_authorized_client_unfollowing(self):
-        user_client = Client()
-        user_client.force_login(self.author)
-        response = user_client.get(reverse('posts:follow_index'))
+        """Новая запись пользователя появляется в ленте тех, кто на него
+        подписан и не появляется в ленте тех, кто не подписан."""
+        response = self.authorized_client.get(reverse('posts:follow_index'))
         count = len(response.context['page_obj'])
-        self.follower.delete()
-        response = user_client.get(reverse('posts:follow_index'))
-        self.assertFalse(len(response.context['page_obj']))
+        self.authorized_client.get(
+            reverse('posts:profile_unfollow', args=(self.author,))
+        )
+        self.assertFalse(
+            Post.objects.filter(author__following__user=self.user)
+        )
         self.assertTrue(count)
 
     def test_post_on_list(self):
-        user_client = Client()
-        user_client.force_login(self.author)
-        response = user_client.get(reverse('posts:follow_index'))
+        """Пользователь видит посты автора на которого подписан"""
+        response = self.authorized_client.get(reverse('posts:follow_index'))
         count = len(response.context['page_obj'])
         Post.objects.create(
-            author=self.user,
+            author=self.author,
             text='Тестовый текст-2'
         )
-        response = user_client.get(reverse('posts:follow_index'))
+        response = self.authorized_client.get(reverse('posts:follow_index'))
         self.assertEqual(len(response.context['page_obj']), count + 1)
-        user2 = User.objects.create_user(username='follower')
-        user2_client = Client()
-        user2_client.force_login(user2)
-        response = user2_client.get(reverse('posts:follow_index'))
+
+    def test_post_not_on_list(self):
+        """Пользователь не видит посты автора на которого не подписан"""
+        response = self.authorized_client.get(reverse('posts:follow_index'))
+        self.assertTrue(len(response.context['page_obj']))
+        response = self.nofollow_client.get(reverse('posts:follow_index'))
         self.assertFalse(len(response.context['page_obj']))
