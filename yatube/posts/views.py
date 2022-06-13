@@ -47,13 +47,11 @@ def post_detail(request, post_id):
     template = 'posts/post_detail.html'
     post = get_object_or_404(Post.objects.select_related('author', 'group'),
                              pk=post_id)
-    author = post.author.get_full_name
     count = post.author.posts.count()
     form = CommentForm()
     comments = post.comment.select_related('author').all()
     context = {
         'post': post,
-        'author': author,
         'count': count,
         'form': form,
         'comments': comments,

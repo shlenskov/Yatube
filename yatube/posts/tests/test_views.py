@@ -289,7 +289,7 @@ class FollowTest(TestCase):
         self.assertFalse(count)
         self.nofollow_client.get(
             reverse('posts:profile_follow', args=(self.author,)))
-        self.assertTrue(Post.objects.filter(author__following__user=self.user))
+        self.assertTrue(Follow.objects.filter(user=self.nofollow))
 
     def test_authorized_client_unfollowing(self):
         """Новая запись пользователя появляется в ленте тех, кто на него
@@ -299,9 +299,7 @@ class FollowTest(TestCase):
         self.authorized_client.get(
             reverse('posts:profile_unfollow', args=(self.author,))
         )
-        self.assertFalse(
-            Post.objects.filter(author__following__user=self.user)
-        )
+        self.assertFalse(Follow.objects.filter(user=self.user))
         self.assertTrue(count)
 
     def test_post_on_list(self):

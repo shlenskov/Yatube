@@ -1,14 +1,10 @@
 {% extends 'base.html' %}
 {% load cache %}
-{% load thumbnail %}
 {% block title %}Ваши подписки{% endblock %}
 {% block content %}
   {% cache 20 index_page page_obj %}
-  {% include 'posts/includes/switcher.html' with show_follow_link=True %}
+  {% include 'posts/includes/switcher.html' with follow=True %}
   {% for post in page_obj %}
-    {% thumbnail post.image "500x339" crop="center" upscale=True as im %}
-        <img class="card-img my-2" src="{{ im.url }}">
-        {% endthumbnail %}
     {% include 'posts/includes/post_card.html' with show_group_link=True show_profile_link=True %}
   {% if not forloop.last %}
     <hr>{% endif %}

@@ -3,9 +3,8 @@
 {% block title %}Последние обновления на сайте{% endblock %}
 {% block content %}
   {% cache 20 index_page page_obj %}
-  {% include 'posts/includes/switcher.html' with show_index_link=True %}
+  {% include 'posts/includes/switcher.html' with index=True %}
   {% for post in page_obj %}
-    {% include 'posts/includes/image.html' %}
     {% include 'posts/includes/post_card.html' with show_group_link=True show_profile_link=True %}
   {% if not forloop.last %}<hr>{% endif %}
   {% endfor %}

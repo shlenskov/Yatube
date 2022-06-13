@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load thumbnail %}
 {% block title %}Профайл пользователя {{ author.get_full_name }}{% endblock %}
 {% block content %}
   <div class="container py-5">
@@ -25,7 +24,6 @@
    {% endif %}
     </div>
     {% for post in page_obj %}
-    {% include 'posts/includes/image.html' %}
     {% include 'posts/includes/post_card.html' with show_group_link=True %}
     {% if not forloop.last %}<hr>{% endif %}
     {% endfor %}
