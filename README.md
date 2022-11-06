@@ -1,6 +1,6 @@
-Yatube - социальная сеть. 
+# Yatube - социальная сеть. 
 
-Она дает пользователям следующие возможности:
+## Она дает пользователям следующие возможности:
 - создание учетной записи;
 - публикации записей в сообществе;
 - возможность публикации в записи изображений;
@@ -10,38 +10,41 @@ Yatube - социальная сеть.
 - просмотр ленты с записями, на которые оформлена подписка.
 
 
-Как запустить проект:
+## Как запустить проект:
 
-Клонировать репозиторий и перейти в него в командной строке:
+- Клонировать репозиторий и перейти в него в командной строке:
 
 git clone https://git@github.com:shlenskov/api_final_yatube.git  
   
 cd api_final_yatube  
   
-Cоздать и активировать виртуальное окружение:
+- Cоздать и активировать виртуальное окружение:
 
-для MacOS:
+> для MacOS:
 
 python3 -m venv env
+
 source venv/bin/activate 
   
-для Windows:
+> для Windows:
 
 python -m venv venv
+
 source venv/bin/activate
+
 source venv/Scripts/activate  
   
-Установить зависимости из файла requirements.txt:
+- Установить зависимости из файла requirements.txt:
 
 pip install -r requirements.txt
   
 python3 -m pip install --upgrade pip
 
-Выполнить миграции:
+- Выполнить миграции:
 
 python3 manage.py migrate  
   
-Запустить проект:
+- Запустить проект:
 
 python3 manage.py runserver  
 
