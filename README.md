@@ -14,40 +14,51 @@
 
 - Клонировать репозиторий и перейти в него в командной строке:
 
+```
 git clone https://git@github.com:shlenskov/api_final_yatube.git  
   
-cd api_final_yatube  
+cd api_final_yatube
+```
   
 - Cоздать и активировать виртуальное окружение:
 
 > для MacOS:
 
+```
 python3 -m venv env
 
 source venv/bin/activate 
+```
   
 > для Windows:
 
+```
 python -m venv venv
 
 source venv/bin/activate
 
-source venv/Scripts/activate  
+source venv/Scripts/activate
+```
   
 - Установить зависимости из файла requirements.txt:
 
+```
 pip install -r requirements.txt
   
 python3 -m pip install --upgrade pip
+```
 
 - Выполнить миграции:
 
-python3 manage.py migrate  
+```
+python3 manage.py migrate
+```
   
 - Запустить проект:
 
+```
 python3 manage.py runserver  
-
+```
 
 
 Автор: Шленсков Владимир.
